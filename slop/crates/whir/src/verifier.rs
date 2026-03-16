@@ -100,8 +100,8 @@ pub enum WhirProofError {
     FinalQueryMismatch,
     #[error("final eval error")]
     FinalEvalError,
-    #[error("invalid number of commitments: expected {0}, got {1}")]
-    InvalidNumberOfCommitments(usize, usize),
+    #[error("invalid number of commitments: expected {0}, got {1}, {2}, {3}")]
+    InvalidNumberOfCommitments(usize, usize, usize, usize),
     #[error("proof has incorrect shape")]
     IncorrectShape,
 }
@@ -188,6 +188,8 @@ where
             return Err(WhirProofError::InvalidNumberOfCommitments(
                 self.num_expected_commitments,
                 commitments.len(),
+                round_areas.len(),
+                proof.initial_merkle_proof.len(),
             ));
         }
 
