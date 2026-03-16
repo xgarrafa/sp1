@@ -4,12 +4,12 @@ use crate::builder::{
 };
 use derive_where::derive_where;
 use itertools::Itertools;
-use p3_util::reverse_bits_len;
 use slop_algebra::{AbstractExtensionField, AbstractField, TwoAdicField};
 use slop_basefold::BaseFoldVerifierError;
 use slop_challenger::{FieldChallenger, IopCtx};
 use slop_merkle_tree::MerkleTreeTcsError;
 use slop_multilinear::{partial_lagrange_blocking, Point};
+use slop_utils::reverse_bits_len;
 use thiserror::Error;
 
 use super::basefold_verifier_wrapper::ZkStackedPcsVerifier;

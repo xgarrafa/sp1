@@ -8799,8 +8799,6 @@ dependencies = [
  "derive-where",
  "futures",
  "itertools 0.14.0",
- "p3-symmetric",
- "p3-util",
  "rand 0.8.5",
  "rand_chacha 0.3.1",
  "rayon",
@@ -8823,6 +8821,7 @@ dependencies = [
  "slop-sumcheck",
  "slop-symmetric",
  "slop-tensor",
+ "slop-utils",
  "thiserror 1.0.69",
  "tokio",
 ]

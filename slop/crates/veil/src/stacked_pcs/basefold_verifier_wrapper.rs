@@ -46,7 +46,6 @@
 
 use crate::builder::ZkIopCtx;
 use itertools::Itertools;
-use p3_util::reverse_bits_len;
 use slop_algebra::{AbstractExtensionField, AbstractField, TwoAdicField};
 use slop_basefold::{BaseFoldVerifierError, BasefoldProof, BasefoldVerifier, FriConfig};
 use slop_basefold_prover::BasefoldProver;
@@ -54,6 +53,7 @@ use slop_challenger::{CanObserve, CanSampleBits, FieldChallenger, GrindingChalle
 use slop_merkle_tree::MerkleTreeTcsError;
 use slop_multilinear::Point;
 use slop_stacked::StackedPcsVerifier;
+use slop_utils::reverse_bits_len;
 
 use super::basefold_prover_wrapper::ZkBasefoldProver;
 
