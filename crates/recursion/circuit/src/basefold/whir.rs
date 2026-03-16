@@ -728,8 +728,6 @@ mod tests {
             )
             .unwrap();
 
-        println!("Native verification passed");
-
         // Recursive circuit verification.
         let mut builder = AsmBuilder::default();
         let mut witness_stream = Vec::new();
