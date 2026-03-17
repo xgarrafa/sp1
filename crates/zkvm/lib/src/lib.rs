@@ -12,6 +12,7 @@ pub mod ecdsa;
 pub mod ed25519;
 pub mod io;
 pub mod mprotect;
+pub mod poseidon2;
 pub mod secp256k1;
 pub mod secp256r1;
 pub mod unconstrained;
