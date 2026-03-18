@@ -64,7 +64,6 @@ pub struct WhirProof<GC>
 where
     GC: IopCtx,
 {
-    pub config: WhirProofShape<GC::F>,
     // First sumcheck
     pub initial_sumcheck_polynomials: Vec<(SumcheckPoly<GC::EF>, ProofOfWork<GC>)>,
     pub initial_merkle_proof: Rounds<MerkleTreeOpeningAndProof<GC>>,
@@ -138,13 +137,16 @@ pub fn map_to_pow<F: AbstractField>(mut elem: F, len: usize) -> Point<F> {
 impl<GC> Verifier<GC>
 where
     GC: IopCtx,
+    GC::Challenger: VariableLengthChallenger<GC::F, GC::Digest>,
 {
     pub fn new(
         merkle_verifier: MerkleTreeTcs<GC>,
         config: WhirProofShape<GC::F>,
         num_expected_commitments: usize,
+        challenger: &mut GC::Challenger,
     ) -> Self {
         assert_ne!(num_expected_commitments, 0, "commitment must exist");
+        config.write_to_challenger::<GC::Digest, GC::Challenger>(challenger);
         Self { merkle_verifier, config, num_expected_commitments }
     }
 
@@ -169,7 +171,7 @@ where
         proof: &WhirProof<GC>,
         challenger: &mut GC::Challenger,
     ) -> Result<(Point<GC::EF>, GC::EF), WhirProofError> {
-        let config = &proof.config;
+        let config = &self.config;
         let n_rounds = config.round_parameters.len();
 
         if n_rounds == 0
@@ -321,7 +323,7 @@ where
             let claim_batching_randomness: GC::EF = challenger.sample_ext_element();
 
             if !challenger.check_witness(
-                round_params.queries_pow_bits.ceil() as usize,
+                round_params.queries_pow_bits,
                 proof.query_proofs_of_work[round_index],
             ) {
                 return Err(WhirProofError::PowError);
@@ -490,7 +492,7 @@ where
             return Err(WhirProofError::FinalQueryMismatch);
         }
 
-        if !challenger.check_witness(config.final_pow_bits.ceil() as usize, proof.final_pow) {
+        if !challenger.check_witness(config.final_pow_bits, proof.final_pow) {
             return Err(WhirProofError::PowError);
         }
 
@@ -540,7 +542,7 @@ where
         sumcheck_polynomials: &[(SumcheckPoly<GC::EF>, ProofOfWork<GC>)],
         mut claimed_sum: GC::EF,
         rounds: usize,
-        pow_bits: &[f64],
+        pow_bits: &[usize],
         challenger: &mut GC::Challenger,
     ) -> Result<(Vec<GC::EF>, GC::EF), SumcheckError> {
         if sumcheck_polynomials.len() != rounds {
@@ -563,7 +565,7 @@ where
             let folding_randomness_single: GC::EF = challenger.sample_ext_element();
             randomness.push(folding_randomness_single);
 
-            if !challenger.check_witness(pow_bits[i].ceil() as usize, *pow_witness) {
+            if !challenger.check_witness(pow_bits[i], *pow_witness) {
                 return Err(SumcheckError::PowError);
             }
 
