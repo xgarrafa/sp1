@@ -44,7 +44,7 @@ impl Poseidon2State {
             let start_idx = 3 * i;
             *element += block[start_idx] as u32;
             *element += (block[start_idx + 1] as u32) << 8;
-            *element += (block[start_idx + 1] as u32) << 16;
+            *element += (block[start_idx + 2] as u32) << 16;
         }
         unsafe {
             self.absorb_field_block_unchecked(&field_block);
