@@ -1,7 +1,7 @@
 #[cfg(target_os = "zkvm")]
 use core::arch::asm;
 
-pub use sp1_lib::poseidon2::Poseidon2State;
+pub use sp1_lib::poseidon2::{Poseidon2ByteHash, Poseidon2State};
 
 /// Poseidon2 hash function syscall for the SP1 RISC-V zkVM.
 #[allow(unused_variables)]

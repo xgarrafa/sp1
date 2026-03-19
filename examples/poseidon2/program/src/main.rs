@@ -1,19 +1,15 @@
 #![no_main]
 sp1_zkvm::entrypoint!(main);
 
-use sp1_zkvm::syscalls::Poseidon2State;
+use sp1_zkvm::syscalls::Poseidon2ByteHash;
 
 pub fn main() {
-    let mut state = Poseidon2State::default();
-
-    // Hash ~10 MB: 436906 blocks of 24 bytes each = 10,485,744 bytes.
+    // Build ~10 MB of input data.
+    let mut data = Vec::with_capacity(436906 * 4);
     for i in 0u32..436906 {
-        let mut block = [0u8; 24];
-        let bytes = i.to_le_bytes();
-        block[..4].copy_from_slice(&bytes);
-        state.absorb_byte_block(&block);
+        data.extend_from_slice(&i.to_le_bytes());
     }
 
-    let output = state.output();
+    let output = Poseidon2ByteHash::hash(&data);
     println!("poseidon2 hash: {:?}", output);
 }
