@@ -331,13 +331,6 @@ where
                 .collect();
             let claim_batching_randomness: GC::EF = challenger.sample_ext_element();
 
-            if !challenger.check_witness(
-                round_params.queries_pow_bits,
-                proof.query_proofs_of_work[round_index],
-            ) {
-                return Err(WhirProofError::PowError);
-            }
-
             let merkle_proof = if round_index != 0 {
                 &proof.merkle_proofs[round_index - 1]
             } else {
