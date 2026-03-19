@@ -85,8 +85,8 @@ where
 pub enum WhirProofError {
     #[error("invalid number of OOD samples: expected {0}, got {1}")]
     InvalidNumberOfOODSamples(usize, usize),
-    #[error("sumcheck error: {}, {}", .0.0, .0.1)]
-    SumcheckError((SumcheckError, usize)),
+    #[error("sumcheck error: {0}, {1}")]
+    SumcheckError(SumcheckError, usize),
     #[error("invalid proof of work")]
     PowError,
     #[error("invalid OOD evaluation")]
@@ -107,7 +107,7 @@ pub enum WhirProofError {
 
 impl From<(SumcheckError, usize)> for WhirProofError {
     fn from(value: (SumcheckError, usize)) -> Self {
-        WhirProofError::SumcheckError((value.0, value.1))
+        WhirProofError::SumcheckError(value.0, value.1)
     }
 }
 
@@ -197,7 +197,13 @@ where
         }
 
         for (merkle_proof, area) in proof.initial_merkle_proof.iter().zip_eq(round_areas.iter()) {
-            if merkle_proof.proof.width << self.config.starting_interleaved_log_height != *area {
+            if merkle_proof.proof.width.leading_zeros()
+                < self.config.starting_interleaved_log_height as u32
+                || merkle_proof.proof.width << self.config.starting_interleaved_log_height != *area
+                || merkle_proof.proof.log_tensor_height
+                    != self.config.starting_interleaved_log_height
+                        + self.config.starting_log_inv_rate
+            {
                 println!(
                     "proof width: {}, proof log height: {}, expected area {}, area: {}",
                     merkle_proof.proof.width,
@@ -515,7 +521,9 @@ where
             .blocking_eval_at(&Point::from(folding_randomness))[0];
 
         let mut summand = GC::EF::zero();
-        for (i, eval_points) in final_evaluation_points.into_iter().enumerate() {
+        for (i, eval_points) in
+            final_evaluation_points.into_iter().enumerate().filter(|(_, ep)| !ep.is_empty())
+        {
             let combination_randomness = all_claim_batching_randomness[i];
             let len = eval_points[0].len();
             let eval_randomness: Point<GC::EF> =
