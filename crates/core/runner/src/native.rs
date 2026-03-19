@@ -247,6 +247,8 @@ impl MinimalExecutorRunner {
         // Normal termination, this should just return success.
         assert!(status.success());
 
+        self.global_clk = output.global_clk;
+        self.clk = output.clk;
         self.output = Some(Ok(output));
     }
 
