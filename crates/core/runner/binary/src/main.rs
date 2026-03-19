@@ -107,7 +107,6 @@ fn main() {
     let output = Output {
         public_values_stream: compiled.public_values_stream,
         hints: compiled.hints,
-        global_clk: compiled.global_clk,
         exit_code: compiled.exit_code,
     };
 
