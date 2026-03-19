@@ -177,7 +177,7 @@ extern "C" {
     /// Reads a buffer from the input stream.
     pub fn read_vec_raw() -> ReadVecResult;
 
-    /// Poseidon2 permutation
+    /// Executes the Poseidon2 permutation on the given state buffer in-place.
     pub fn syscall_poseidon2(inout: &mut crate::poseidon2::Poseidon2State);
 }
 

@@ -1,6 +1,6 @@
-const WIDTH: usize = 16;
-const RATE: usize = 8;
-const BYTE_BLOCK_SIZE: usize = 24;
+pub const WIDTH: usize = 16;
+pub const RATE: usize = 8;
+pub const BYTE_BLOCK_SIZE: usize = RATE * 3;
 
 use crate::syscall_poseidon2;
 
@@ -31,7 +31,7 @@ impl Poseidon2State {
     ///
     /// # Safety
     /// This function assumes that the elements are within the `SP1Field` range. Breaking this
-    /// constraint will lead to prover panic.
+    /// constraint will lead to prover failure (the proof will not verify).
     unsafe fn absorb_field_block_unchecked(&mut self, block: &[u32; RATE]) {
         self.0[0..RATE].copy_from_slice(block);
         self.permute();
@@ -76,7 +76,7 @@ impl Poseidon2State {
 /// Poseidon2 byte hasher with safe padding (length-prefixed sponge).
 ///
 /// Accepts an arbitrary-length byte slice and returns a `RATE`-sized field element digest.
-/// The input length is absorbed as the first field element before the message blocks,
+/// The input length is absorbed as the first message block before the data blocks,
 /// which prevents collisions between inputs that differ only in trailing zeros.
 pub struct Poseidon2ByteHash;
 
@@ -85,8 +85,8 @@ impl Poseidon2ByteHash {
         let mut state = Poseidon2State::default();
 
         // Absorb the input length (in bytes) as the first block for safe padding.
-        // This prevents length-extension and ensures inputs of different lengths that
-        // zero-pad identically still produce different hashes.
+        // This ensures inputs of different lengths that zero-pad identically still
+        // produce different hashes.
         // The length is encoded as little-endian bytes and packed into field elements
         // using the same 3-bytes-per-element scheme, supporting lengths up to 2^192.
         let len_bytes = input.len().to_le_bytes();

@@ -178,4 +178,5 @@ pub const UINT256_MUL_CARRY: u32 = 0x00_01_01_31;
 #[allow(clippy::mistyped_literal_suffixes)]
 pub const MPROTECT: u32 = 0x00_00_01_32;
 
+/// Executes the `POSEIDON2` permutation syscall.
 pub const POSEIDON2: u32 = 0x00_00_01_33;
