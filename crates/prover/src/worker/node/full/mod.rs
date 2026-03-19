@@ -313,6 +313,7 @@ mod tests {
         crate::CpuSP1ProverComponents,
         serial_test::serial,
         sp1_core_machine::utils::setup_logger,
+        sp1_hypercube::HashableKey,
     };
 
     #[cfg(feature = "experimental")]
