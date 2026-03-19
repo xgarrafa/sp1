@@ -195,8 +195,6 @@ where
             ));
         }
 
-        println!("Round areas: {round_areas:?}");
-
         for (merkle_proof, area) in proof.initial_merkle_proof.iter().zip_eq(round_areas.iter()) {
             if merkle_proof.proof.width << self.config.starting_interleaved_log_height != *area {
                 println!(
@@ -219,6 +217,8 @@ where
             })
             .collect();
 
+        // Because of the length checks at the start of the verification, the checked access isn't
+        // expected to produce an error.
         let commitment = proof.commitments.first().ok_or(WhirProofError::IncorrectShape)?;
 
         if ood_points != commitment.ood_points {
@@ -280,6 +280,8 @@ where
 
         for round_index in 0..n_rounds {
             let round_params = &config.round_parameters[round_index];
+            // Because of the length checks at the start of the verification, the checked access isn't
+            // expected to produce an error.
             let new_commitment =
                 proof.commitments.get(round_index + 1).ok_or(WhirProofError::IncorrectShape)?;
             if new_commitment.ood_answers.len() != round_params.ood_samples {
