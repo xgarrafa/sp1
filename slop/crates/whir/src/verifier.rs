@@ -99,8 +99,8 @@ pub enum WhirProofError {
     FinalQueryMismatch,
     #[error("final eval error")]
     FinalEvalError,
-    #[error("invalid number of commitments: expected {0}, got {1}, {2}, {3}")]
-    InvalidNumberOfCommitments(usize, usize, usize, usize),
+    #[error("invalid number of commitments: expected {0}, got {1}")]
+    InvalidNumberOfCommitments(usize, usize),
     #[error("proof has incorrect shape")]
     IncorrectShape,
 }
@@ -183,19 +183,16 @@ where
             || proof.query_proofs_of_work.len() != n_rounds
             || proof.sumcheck_polynomials.len() != n_rounds
             || proof.commitments.len() != n_rounds + 1
+            || round_areas.len() != self.num_expected_commitments
+            || proof.initial_merkle_proof.len() != self.num_expected_commitments
         {
             return Err(WhirProofError::IncorrectShape);
         }
 
-        if commitments.len() != self.num_expected_commitments
-            || round_areas.len() != self.num_expected_commitments
-            || proof.initial_merkle_proof.len() != self.num_expected_commitments
-        {
+        if commitments.len() != self.num_expected_commitments {
             return Err(WhirProofError::InvalidNumberOfCommitments(
                 self.num_expected_commitments,
                 commitments.len(),
-                round_areas.len(),
-                proof.initial_merkle_proof.len(),
             ));
         }
 
