@@ -343,8 +343,8 @@ where
                 &proof.initial_merkle_proof
             };
 
-            if round_index != 0 {
-                assert_eq!(merkle_proof.len(), 1);
+            if round_index != 0 && merkle_proof.len() != 1 {
+                return Err(WhirProofError::IncorrectShape);
             }
 
             for (merkle_commitment, merkle_proof) in
@@ -441,6 +441,9 @@ where
             prev_folding_factor = round_params.folding_factor;
             generator = generator.square();
             num_variables -= round_params.folding_factor;
+            if prev_commitment.commitment.len() != 1 {
+                return Err(WhirProofError::IncorrectShape);
+            }
         }
 
         // Now, we want to verify the final evaluations
@@ -466,8 +469,6 @@ where
             .map(|val| reverse_bits_len(*val, domain_size))
             .map(|pos| generator.exp_u64(pos as u64))
             .collect();
-
-        assert_eq!(prev_commitment.commitment.len(), 1);
 
         self.merkle_verifier
             .verify_tensor_openings(
