@@ -58,7 +58,7 @@ impl Default for RecursionVks {
 
 impl RecursionVks {
     /// The map for the recursion vk hashes to their indice in the merkle tree.
-    const RECURSION_VK_MAP_BYTES: &[u8] = include_bytes!("vk_map.bin");
+    const RECURSION_VK_MAP_BYTES: &[u8] = include_bytes!("vk_map_dummy.bin");
 
     fn from_map(
         mut map: BTreeMap<[SP1Field; DIGEST_SIZE], usize>,
