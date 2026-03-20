@@ -1,6 +1,6 @@
 use std::{
     convert::Infallible,
-    iter::{self, once},
+    iter::{self, once, repeat},
     sync::Arc,
 };
 
@@ -483,7 +483,13 @@ where
 
         let final_polynomial =
             f_vec.inner().as_ref().unwrap().guts().clone().into_buffer().to_vec();
-        challenger.observe_constant_length_extension_slice(&final_polynomial);
+        let padded_polynomial_coefficients = final_polynomial
+            .iter()
+            .chain(repeat(&GC::EF::zero()))
+            .take(1 << config.final_poly_log_degree)
+            .copied()
+            .collect::<Vec<_>>();
+        challenger.observe_constant_length_extension_slice(&padded_polynomial_coefficients);
 
         let final_pow = challenger.grind(config.final_pow_bits);
 
