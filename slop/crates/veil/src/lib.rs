@@ -1,8 +1,7 @@
 #![allow(clippy::disallowed_types)]
+#![allow(dead_code)]
+#![allow(unused_imports)]
 
-pub mod builder;
-pub mod dot_product;
-pub mod error_correcting_code;
-pub mod example_zk_sumcheck;
-pub mod hadamard_product;
-pub mod stacked_pcs;
+pub mod compiler;
+pub mod protocols;
+pub mod zk;
