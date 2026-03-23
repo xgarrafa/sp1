@@ -1,0 +1,10 @@
+[workspace]
+
+[package]
+name = "mock-check-script"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sp1-sdk = "3.0.0"
+serde = { version = "1.0", features = ["derive"] }
