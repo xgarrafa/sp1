@@ -1,21 +1,35 @@
 use sp1_sdk::{ProverClient, SP1Stdin};
 
 fn main() {
-    // 1. Setup the Prover (The Forge)
     let client = ProverClient::new();
     let mut stdin = SP1Stdin::new();
 
-    // 2. Feed the Secret Inputs (Simulating BlockBasis Vault)
-    stdin.write(&15000u64); // Your Balance
-    stdin.write(&4500u64);  // Your Tax Liability
-
-    println!("STARK/L: Initiating Proof of Solvency...");
+    // TEST CASE: Spending $6,000 on a $5,000 budget
+    let actual_spend: u32 = 6000; 
+    let freelancer_id: u32 = 888; 
+    let budget_limit: u32 = 5000; 
     
-    // 3. The Execution (This creates the 'ELF' and proves it)
-    let (pk, vk) = client.setup(include_bytes!("../../program/elf/riscv32im-succinct-zkvm-elf"));
-    let proof = client.prove(&pk, stdin).run().expect("Proving failed");
+    stdin.write(&actual_spend);
+    stdin.write(&freelancer_id);
+    stdin.write(&budget_limit);
 
-    // 4. The Result (The Signal for your Bento Grid)
-    println!("STARK/L: Receipt Generated!");
-    println!("Public Values (Proof): {:?}", proof.public_values);
+    println!("STARK/L: Generating Multi-Persona Tax & Guardrail Proof...");
+
+    let (pk, vk) = client.setup(include_bytes!("../../program/elf/riscv32im-succinct-zkvm-elf"));
+    let mut proof = client.prove(&pk, stdin).run().expect("Proving failed");
+
+    // Read back the committed values in EXACT order
+    let is_under_budget = proof.public_values.read::<bool>();
+    let limit = proof.public_values.read::<u32>();
+    let tax_impact = proof.public_values.read::<u32>();
+    let id = proof.public_values.read::<u32>();
+
+    println!("--- STARK/L: Receipt Generated ---");
+    println!("Freelancer ID: #{}", id);
+    println!("Is Under Budget: {}", is_under_budget);
+    println!("Budget Limit: ${}", limit);
+    println!("Suggested Tax Reserve: ${}", tax_impact);
+    
+    client.verify(&proof, &vk).expect("Verification failed");
+    println!("STARK/L: Proof Mathematically Verified!");
 }
